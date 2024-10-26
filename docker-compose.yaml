@@ -1,0 +1,70 @@
+version: '3.1'
+
+networks:
+  network_flowise2:
+    name: my_network_flowise2
+
+services:
+    flowise2:
+        image: flowiseai/flowise:2.1.3
+        restart: always
+        depends_on:
+          flowise2_postgres:
+            condition: service_healthy
+        environment:
+            - PORT=${PORT}
+            - CORS_ORIGINS=${CORS_ORIGINS}
+            - IFRAME_ORIGINS=${IFRAME_ORIGINS}
+            - FLOWISE_USERNAME=${FLOWISE_USERNAME}
+            - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
+            - FLOWISE_FILE_SIZE_LIMIT=${FLOWISE_FILE_SIZE_LIMIT}
+            - DEBUG=${DEBUG}
+            - DATABASE_PATH=${DATABASE_PATH}
+            - DATABASE_TYPE=${DATABASE_TYPE}
+            - DATABASE_PORT=${DATABASE_PORT}
+            - DATABASE_HOST=${DATABASE_HOST}
+            - DATABASE_NAME=${DATABASE_NAME}
+            - DATABASE_USER=${DATABASE_USER}
+            - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+            # - DATABASE_SSL=${DATABASE_SSL}
+            # - DATABASE_SSL_KEY_BASE64=${DATABASE_SSL_KEY_BASE64}
+            - APIKEY_PATH=${APIKEY_PATH}
+            - SECRETKEY_PATH=${SECRETKEY_PATH}
+            - FLOWISE_SECRETKEY_OVERWRITE=${FLOWISE_SECRETKEY_OVERWRITE}
+            - LOG_LEVEL=${LOG_LEVEL}
+            - LOG_PATH=${LOG_PATH}
+            - BLOB_STORAGE_PATH=${BLOB_STORAGE_PATH}
+            - DISABLE_FLOWISE_TELEMETRY=${DISABLE_FLOWISE_TELEMETRY}
+            - MODEL_LIST_CONFIG_JSON=${MODEL_LIST_CONFIG_JSON}
+        ports:
+            - '${PORT}:${PORT}'
+        volumes:
+            - ./storage_flowise:/root/.flowise
+        entrypoint: /bin/sh -c "sleep 3; flowise start"
+        networks:
+            - network_flowise2
+
+    flowise2_postgres:
+        image: 'postgres:15.7-alpine3.19'
+        ports:
+          - 15432:5432
+        restart: always
+        command: ["postgres", "-c", "log_statement=all"]
+        environment:
+          - TZ=Asia/Taipei
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=password
+          - POSTGRES_DB=flowise2db
+        networks:
+          - network_flowise2
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U postgres && psql -U postgres -d flowise2db -c 'SELECT 1'"]
+          interval: 10s
+          timeout: 5s
+          retries: 5
+          start_period: 10s
+        volumes:
+          - flowise2_postgres_data:/var/lib/postgresql/data
+
+volumes:
+    flowise2_postgres_data:

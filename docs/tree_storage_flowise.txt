@@ -1,0 +1,9 @@
+> tree -a ./storage_flowise
+./storage_flowise
+├── api.json
+├── encryption.key
+└── logs
+    ├── server-error.log
+    └── server.log
+
+2 directories, 4 files
