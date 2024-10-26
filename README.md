@@ -122,5 +122,5 @@ Special thanks to:
 For more detailed information on Flowise configuration and usage, refer to the following resources:
 
 - [Flowise Official Documentation](https://docs.flowiseai.com/)
-- [Flowise GitHub Repository](https://github.com/FlowiseAI/Flowise)ＮＳ
+- [Flowise GitHub Repository](https://github.com/FlowiseAI/Flowise)
 - [Flowise Discord Community](https://discord.gg/jbaHfsRVBW)
